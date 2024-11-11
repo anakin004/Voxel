@@ -11,6 +11,7 @@ struct vector {
 struct userData {
     vector pos;
     vector ori;
+    unsigned int pID;
 };
 
 
