@@ -4,7 +4,6 @@
 #include <SDL2/SDL_net.h>
 
 
-// could use glm::vec3 but it has some overhead
 struct vector {
     float x, y, z;
 };
