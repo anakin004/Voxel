@@ -18,10 +18,14 @@ const Uint16 SRC_TCP_PORT = 12344;
 const Uint16 DST_TCP_PORT = 12346;
 const Uint8 MAX_PLAYERS = 4;
 
-struct playerState{
-        float x,y,z
-        double rotation;
-        int pID;
+struct vector {
+    float x, y, z;
+};
+
+struct userData {
+    vector pos;
+    vector ori;
+    unsigned int pID;
 };
 
 
