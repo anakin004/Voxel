@@ -1,3 +1,8 @@
+/*
+offloaded to vm or can be deployed locally
+*/
+
+
 #include <stdio.h>
 #include <iostream>
 #include <vector>
@@ -14,13 +19,9 @@ const Uint16 DST_TCP_PORT = 12346;
 const Uint8 MAX_PLAYERS = 4;
 
 struct playerState{
-        int x;
-        int y;
+        float x,y,z
         double rotation;
         int pID;
-        bool shot;
-        Uint8 idx;
-        bool resetting;
 };
 
 
@@ -167,7 +168,7 @@ int handleTCPClient(TCPsocket clientSocket) {
     return 0;
 }
 
-/*
+
 void testSendUDP(UDPsocket udpSocket) {
     // Allocate memory for packet
     UDPpacket *packet = SDLNet_AllocPacket(512);
@@ -202,7 +203,7 @@ void testSendUDP(UDPsocket udpSocket) {
     SDLNet_FreePacket(packet);
 }
 
-*/
+
 
 void startServer() {
 
@@ -280,8 +281,8 @@ void startServer() {
                     }
                 }
 
-                // arbitrarily chosen
-                if(numPlayers >= minPlayers){
+
+                    if(numPlayers >= minPlayers){
                     
                     gGameStarted = true;
 
@@ -318,7 +319,7 @@ void startServer() {
 
 
 
-/*
+
 
 int main(int argc, char* argv[]) {
     if ( !initNetworking()) {
@@ -339,4 +340,3 @@ g++ -o server src/fighterV2/server.cpp -Iinclude/sdl -lmingw32 -lSDL2main -Llib 
 ./server
 
 
-*/
