@@ -62,6 +62,7 @@ private:
 	// we will have x,z,y, then 24 verts per block
 	verts m_AllChunkVerts[CHUNK_SIZE][CHUNK_SIZE][MAX_LEVELS][24];
 
+	// using bitmap for block states - air or solid ( for culling )
 	// we will set a block to true if it is solid, this will help for culling
 	std::bitset<MAX_LEVELS> m_BlockStates[CHUNK_SIZE][CHUNK_SIZE];
 
