@@ -30,7 +30,7 @@ struct userData {
 
 
 std::vector<IPaddress> clientIPS;
-std::vector<playerState> globalPlayers;
+std::vector<userData> globalPlayers;
 std::vector<std::thread> playerThreads;
 SDL_mutex* gameMutex = nullptr;  
 bool gGameStarted = false;
@@ -70,11 +70,11 @@ void handlePacket(UDPpacket* packet, UDPsocket udpSocket) {
 
     /*
      * Player State is stored in packet, so we only need to reinterpret
-     * cast the packet to a playerState pointer so we can check the ip that sent it
+     * cast the packet to a userData pointer so we can check the ip that sent it
      * so we are not sending the same packet back to that person
      */
     
-    playerState* gameState = reinterpret_cast<playerState*>(packet->data);
+    userData* gameState = reinterpret_cast<userData*>(packet->data);
     IPaddress* senderIP = &packet->address;
 
     // Broadcast the state to all other clients
@@ -86,7 +86,7 @@ void handlePacket(UDPpacket* packet, UDPsocket udpSocket) {
             // keep in mind when we send the notice the game started we changed the clientIPS dest port to the universal
             // destination udp port
 
-            packet->len = sizeof(playerState);
+            packet->len = sizeof(userData);
             packet->address = clientIPS[i];
             SDLNet_UDP_Send(udpSocket, -1, packet);
 
@@ -144,7 +144,7 @@ int handleTCPClient(TCPsocket clientSocket) {
 
 
         if( uniqueClient ){
-                playerState initPlayer = {0, 0, 0.0, (int)globalPlayers.size(), false, 0, false};
+                userData initPlayer = {0, 0, 0.0, (int)globalPlayers.size(), false, 0, false};
                 SDL_Log("Player Connected");
                 clientAddress.port = SDL_SwapBE16(DST_UDP_PORT);
                 printIP(clientAddress);
@@ -248,7 +248,7 @@ void startServer() {
     }
 
     // buff for packet
-    UDPpacket* packet = SDLNet_AllocPacket(sizeof(playerState));
+    UDPpacket* packet = SDLNet_AllocPacket(sizeof(userData));
     if (!packet) {
         SDL_Log("Failed to allocate packet: %s", SDLNet_GetError());
         SDLNet_UDP_Close(udpSocket);
