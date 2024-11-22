@@ -25,8 +25,8 @@ public:
 
 	Chunk(int xPos, int zPos);
 	void InitChunk();
-
 	void SetChunkBlocks(int , int);
+	void RemoveBlock(int, int, int);
 	void SetFaceTextureCoord(blockCoords& side, int corner, verts* vertice);
 	void SetChunkIndices();
 	void SetBlockState(int x, int y, int z, bool state);
@@ -62,7 +62,6 @@ private:
 	// we will have x,z,y, then 24 verts per block
 	verts m_AllChunkVerts[CHUNK_SIZE][CHUNK_SIZE][MAX_LEVELS][24];
 
-	// using bitmap for block states - air or solid ( for culling )
 	// we will set a block to true if it is solid, this will help for culling
 	std::bitset<MAX_LEVELS> m_BlockStates[CHUNK_SIZE][CHUNK_SIZE];
 
