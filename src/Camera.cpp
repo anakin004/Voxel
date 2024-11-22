@@ -1,5 +1,6 @@
 #include "Camera.h"
 #include "World.h"
+#include "Ray.h"
 
 const float GRAVITY = -9.81f * 2.7; // amplifying gravity
 const float TERMINAL_VELOCITY = -50.0f;
@@ -76,7 +77,7 @@ void Camera::Inputs(GLFWwindow* window)
 	* but the compiler should be doing optimizations(shifting) since they are constants and can be detemined at compile time
 	*/
 
-
+	/*
 
 
 	int chunkX = (int)std::floor(m_Position.x / CHUNK_SIZE);
@@ -131,6 +132,7 @@ void Camera::Inputs(GLFWwindow* window)
 			m_CurAirVel = 0.0f;  // Ensure no upward force if grounded
 		}
 	}
+	*/
 
 	// PAUSING
 	if (!m_Paused && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -145,9 +147,40 @@ void Camera::Inputs(GLFWwindow* window)
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
 		m_Paused = false;
 	}
+	
 
 	if( !m_Paused )
 	{
+
+		
+		if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			Ray newRay = Ray(m_Position, m_Orientation);
+			bool hit = false;
+			bool first = true;
+			static float timeHeld = 0;
+
+			static double lastHit = -2;
+			if (glfwGetTime() - lastHit > .5) {
+				lastHit = glfwGetTime(); // Always update time when the loop is entered
+				while (!hit) {
+					const glm::vec3 cur = newRay.march();
+					int cx = (int)std::floor(cur.x / 16.f);
+					int cz = (int)std::floor(cur.z / 16.f);
+					int x = (int)std::floor(cur.x - 16 * cx);
+					int y = (int)std::floor(cur.y);
+					int z = (int)std::floor(cur.z - 16 * cz);
+					Chunk* c = World::GetChunk(cx, cz);
+
+					hit = c->CheckBit(x, y, z);
+					std::cout << y;
+					if (hit) {
+						//std::cout << "Player Pos is: " << m_Position.x << " " << m_Position.y << std::endl;
+						c->RemoveBlock(x, y, z);
+					}
+				}
+			}
+		}
 
 		double mouseX;
 		double mouseY;
