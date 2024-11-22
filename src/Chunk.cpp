@@ -83,6 +83,8 @@ void Chunk::SetChunkIndices()
  	const int indicesPerBlock = sizeof(BaseBlockIndices)/sizeof(BaseBlockIndices[0]);
 	const int vertsPerBlock = sizeof(BaseBlock) / sizeof(BaseBlock[0]);
 
+	// reset if chunk is dirty
+	m_NumIndices = 0;
 
 	for (GLuint i = 0; i < m_NumVerts; i++)
 	{
@@ -99,6 +101,21 @@ void Chunk::SetChunkIndices()
 		}
 	}
 }
+
+void Chunk::RemoveBlock(int x, int y, int z)
+{
+
+	// Mark the block as removed by resetting its state
+	m_BlockStates[x][z].reset(y);
+
+	// Now update the chunk's faces and indices to reflect the block removal
+	SetCulledFaces();
+	SetChunkIndices();
+
+	LoadChunk();
+	
+}
+
 
 
 void Chunk::LoadChunk()
@@ -163,7 +180,7 @@ void Chunk::RenderChunk()
 static inline Chunk* GetNeighborChunk(int x, int z) { return World::GetChunk(x / 16, z / 16); }
 
 
-bool Chunk::CheckBit(int x, int z, int y)
+bool Chunk::CheckBit(int x, int y, int z)
 {
 	bool solid = m_BlockStates[x][z].test(y);
 	
@@ -212,7 +229,7 @@ bool Chunk::CheckNeighborCull(int xPos, int zPos, int xIdx, int zIdx, int yIdx, 
 	if (neighbor == nullptr)
 		return false;
 
-	bool isSolid = neighbor->GetBlockState(xIdx, zIdx, yIdx, dir);
+	bool isSolid = neighbor->GetBlockState(xIdx, yIdx, zIdx, dir);
 
 	// possibly cull if neighbor exists and there is a block next to block we want to check
 	return isSolid;
@@ -221,11 +238,13 @@ bool Chunk::CheckNeighborCull(int xPos, int zPos, int xIdx, int zIdx, int yIdx, 
 
 void Chunk::SetCulledFaces()
 {
-
 	const int vertsPerBlock = sizeof(BaseBlock) / sizeof(BaseBlock[0]);
 
 	const int numFaces = 6;
 	const int vertsPerFace = 4;
+
+	// in the case we want to reset culled faces we reset numverts
+	m_NumVerts = 0;
 
 
 	for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -238,11 +257,15 @@ void Chunk::SetCulledFaces()
 
 			for (int y = 0; y <= height + (-MAX_DEPTH); y++)
 			{
+
+				if (!m_BlockStates[x][z].test(y))
+					continue;
+
 				Direction dir = NORTH;
 				for (int k = 0; k < numFaces; k++)
 				{
 
-
+					
 
 					bool cull = false;
 
@@ -419,7 +442,6 @@ void Chunk::UpdateRenderStatus(glm::vec3 &playerPos, GLuint renderDist)
 // this is to destroy chunk at the end when we exit, not when we leave render dist
 void Chunk::DestroyChunkEnd()
 {
-
 	delete[] m_CulledChunkVerts;
 	delete[] m_ChunkIndices;
 
