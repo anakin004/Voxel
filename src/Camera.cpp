@@ -1,6 +1,7 @@
 #include "Camera.h"
 #include "World.h"
 #include "Ray.h"
+#include "Math.h"
 
 const float GRAVITY = -9.81f * 2.7; // amplifying gravity
 const float TERMINAL_VELOCITY = -50.0f;
@@ -77,7 +78,7 @@ void Camera::Inputs(GLFWwindow* window)
 	* but the compiler should be doing optimizations(shifting) since they are constants and can be detemined at compile time
 	*/
 
-	/*
+	
 
 
 	int chunkX = (int)std::floor(m_Position.x / CHUNK_SIZE);
@@ -132,7 +133,7 @@ void Camera::Inputs(GLFWwindow* window)
 			m_CurAirVel = 0.0f;  // Ensure no upward force if grounded
 		}
 	}
-	*/
+	
 
 	// PAUSING
 	if (!m_Paused && glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -165,6 +166,9 @@ void Camera::Inputs(GLFWwindow* window)
 				lastHit = glfwGetTime(); // Always update time when the loop is entered
 				while (!hit) {
 					const glm::vec3 cur = newRay.march();
+
+					if (vec3Dist(cur, m_Position) >= 4) break;
+
 					int cx = (int)std::floor(cur.x / 16.f);
 					int cz = (int)std::floor(cur.z / 16.f);
 					int x = (int)std::floor(cur.x - 16 * cx);
