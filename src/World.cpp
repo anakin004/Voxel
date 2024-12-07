@@ -11,8 +11,8 @@ World::World(int renderDist, glm::vec3& playerStartPosition) : m_WorldLight(), m
 	// For my specs, running with 1 thread in the pool works even thought a pool with one thread makes little sense
 	// but if your pc specs are lacking, I would recommend seeing how many cores you have and allocating that many threads for the pool
 
-	// even a pool of one will work, default to 4
-	pool(/*4*/)
+	// even a pool of one will work, default to 2
+	pool(2)
 {
 
 
